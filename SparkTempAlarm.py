@@ -36,7 +36,7 @@ def activateHeat(tempDelta, thermostat):
     """Raise the temperature by tempDelta on thermostat"""
     currentTemp = thermostat.temperature
     newTemp = currentTemp + tempDelta
-    # thermostat.temperature = newTemp
+    thermostat.temperature = newTemp
     sendAlarmEmail(currentTemp, minTemp, newTemp)
     print "Adjusting temperature from %s to %s" % (currentTemp, newTemp)
 
