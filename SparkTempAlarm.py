@@ -18,6 +18,7 @@ import json
 import nest
 import imsCredentials   # File containing authentication details for Spark Device and Nest
 import smtplib
+import urllib2
 
 # Spark Core Stream Configuration
 streamURL = 'https://api.spark.io/v1/devices/' + imsCredentials.deviceID + '/events/temperature?access_token=' + imsCredentials.token
@@ -31,6 +32,8 @@ minTemp = 10.0
 alarmTempDelta = 2.0
 tempAlarm = False
 
+# Sparkfun Data Log
+sparkfunLogURL = "http://data.sparkfun.com/input/" + imsCredentials.sparkfunPubKey +"?private_key=" + imsCredentials.sparkfunPrivateKey + "&temperature="
 
 def activateHeat(tempDelta, thermostat):
     """Raise the temperature by tempDelta on thermostat"""
@@ -60,12 +63,17 @@ def sendAlarmEmail(currentTemp, alarmTemp, newTemp):
     print "Sent alert email to %s" % imsCredentials.alarmEmail
 
 # Open Spark Core Publish Stream
-messages = SSEClient(streamURL)
+messages = SSEClient(streamURL, retry=12000)
 
 for msg in messages:
     if 'data' in msg.data:
         package = json.loads(msg.data)
         temp = float(package['data'])
+
+        # Log temperature to data.sparkfun.com
+        requestURL = sparkfunLogURL + "%s" % temp
+        result = urllib2.urlopen(requestURL).read()
+
         if temp < minTemp and tempAlarm is False:
             tempAlarm = True
             activateHeat(alarmTempDelta, nlt)
