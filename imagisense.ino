@@ -7,9 +7,9 @@ double temperature = 0;
 
 void setup() {
     pinMode(A7, INPUT);
-    Spark.variable("temperature",&temperature, DOUBLE);
-    Spark.variable("reading", &reading, DOUBLE);
-    Spark.variable("voltage", &voltage, DOUBLE);
+    Particle.variable("temperature",temperature);
+    Particle.variable("reading", reading);
+    Particle.variable("voltage", voltage);
 }
 
 void loop() {
@@ -23,7 +23,8 @@ void loop() {
   
     char tempString[10] = {"01"};
     sprintf(tempString,"%f",temperature);
-    Spark.publish("temperature",tempString);
-    delay(5000);
-    Spark.sleep(SLEEP_MODE_DEEP,900);
+    Particle.publish("temperature",tempString);
+    //delay(5000);
+    delay(500);
+    Particle.sleep(SLEEP_MODE_DEEP,900);
 }
